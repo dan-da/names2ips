@@ -214,6 +214,11 @@ END;
                 if( $params['ipformat'] == 'hex') {
                     $addr = sprintf( '0x%x', $addr );
                 }
+                else {
+                    // for 32 bit systems, to avoid printing as neg number.
+                    // see: http://php.net/manual/en/function.ip2long.php#refsect1-function.ip2long-notes
+                    $addr = sprintf( '%u', $addr );
+                }
             }
         }
         return $addrs;
@@ -337,7 +342,6 @@ class report_writer {
             }
         }
         else {
-            $linebuf = '';
             foreach( $results as $val ) {
                 $val = str_pad( $val, strstr($val, '.') ? 17 : 12);
                 fwrite( $fh, $val . "\n" );
@@ -367,7 +371,9 @@ class report_writer {
                     $linebuf = '';
                 }
             }
-            fwrite( $fh, $linebuf . "\n" );
+            if( $linebuf ) {
+                fwrite( $fh, $linebuf . "\n" );
+            }
         }
     }
     
@@ -392,7 +398,9 @@ class report_writer {
                     $linebuf = '';
                 }
             }
-            fwrite( $fh, $linebuf . "\n" );
+            if( $linebuf ) {
+                fwrite( $fh, $linebuf . "\n" );
+            }
         }
     }
 
