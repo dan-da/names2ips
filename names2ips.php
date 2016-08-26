@@ -58,7 +58,7 @@ class names2ips {
      * returns the CLI params, exactly as entered by user.
      */
     protected function get_cli_params() {
-        $params = getopt( 'g', [ 'hostnames:', 'hostnamesfile:', 'outfile:', 'logfile:', 'groupby:', 'ipformat:', 'format:', 'endian:', 'help', 'version' ] );
+        $params = getopt( 'g', [ 'hostnames:', 'hostnamesfile:', 'outfile:', 'logfile:', 'groupby:', 'sort:', 'ipformat:', 'format:', 'endian:', 'help', 'version' ] );
 
         return $params;
     }
@@ -80,6 +80,7 @@ class names2ips {
         $this->params['groupby'] = @$params['groupby'] ?: 'hostname';
         $this->params['ipformat'] = @$params['ipformat'] ?: 'dot';
         $this->params['endian'] = @$params['endian'] ?: 'little';
+        $this->params['sort'] = @$params['sort'] ?: 'asc';
 
         if( isset( $params['version'] ) ) {
             $this->print_version();
@@ -167,6 +168,7 @@ class names2ips {
     --hostnamefile=<path>  file containing bitcoin addresses, one per line.
     --ipformat=<path>      longint|hex|dot    default=dot
     --groupby=<type>       hostname|none  default = hostname
+    --sort=<type>          asc|desc|none  default = asc
     --format=<type>        json|csv|text|textcompact|code|printr
     --outfile=<file>       file to write report to instead of stdout.
     --endian=<type>        big|little.  used when ipformat is longint or hex.
@@ -190,11 +192,24 @@ END;
         $results = [];
         foreach( $hostnames as $hostname ) {
             if( $params['groupby'] == 'hostname' ) {
-                $results[$hostname] = $this->lookup_host( $hostname );
+                $results[$hostname] = $this->sort_results( $this->lookup_host( $hostname ) );
             }
             else {
                 $results = array_merge( $results, $this->lookup_host( $hostname ) );
             }
+        }
+        if( $params['groupby'] != 'hostname' ) {
+            $results = $this->sort_results( $results );
+        }
+        
+        return $results;
+    }
+    
+    protected function sort_results( $results ) {
+        $params = $this->get_params();
+        switch( $params['sort'] ) {
+            case 'asc':  sort($results); break;
+            case 'desc': rsort($results); break;
         }
         return $results;
     }

@@ -135,6 +135,7 @@ $ ./names2ips.php
     --hostnamefile=<path>  file containing bitcoin addresses, one per line.
     --ipformat=<path>      longint|hex|dot    default=dot
     --groupby=<type>       hostname|none  default = hostname
+    --sort=<type>          asc|desc|none  default = asc
     --format=<type>        json|csv|text|textcompact|code|printr
     --outfile=<file>       file to write report to instead of stdout.
     --endian=<type>        big|little.  used when ipformat is longint or hex.
