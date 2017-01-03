@@ -217,6 +217,8 @@ END;
     protected function lookup_host($hostname) {
         $addrs = gethostbynamel( $hostname );
         
+        $addrs = is_array($addrs) ? $addrs : [];
+        
         $endian = $this->is_little_endian() ? 'little' : 'big';
         $params = $this->get_params();
         if( in_array( $params['ipformat'], ['longint','hex'] )) {
@@ -420,6 +422,8 @@ class report_writer {
     }
 
     static private function results_are_grouped( $results ) {
+        
+        $grouped = false;
         
         foreach( $results as $k => $v ) {
             $grouped = !is_integer( $k );
